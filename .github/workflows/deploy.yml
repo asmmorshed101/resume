@@ -19,7 +19,7 @@ jobs:
           # Variables
           SERVER_USER=ubuntu
           SERVER_IP=18.143.176.43
-          PRIVATE_KEY=~/.ssh/runner_web_key  # Option 2: dedicated SSH key for Runner → Web Server
+          PRIVATE_KEY=~/.ssh/id_ecdsa  # Option 2: dedicated SSH key for Runner → Web Server
 
           # Copy code to Web Server
           scp -i $PRIVATE_KEY -o StrictHostKeyChecking=no -r ./* $SERVER_USER@$SERVER_IP:/var/www/mywebsite/
