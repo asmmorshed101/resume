@@ -19,6 +19,8 @@ jobs:
           SERVER_USER=ubuntu
           SERVER_IP=18.143.147.188
           PRIVATE_KEY=~/.ssh/id_ecdsa
+          # Full replace: remove old files first
+          ssh -i $PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "sudo rm -rf /var/www/mywebsite/*"
 
           # Copy website files to Runner home dir
           scp -i $PRIVATE_KEY -o StrictHostKeyChecking=no -r ./* $SERVER_USER@$SERVER_IP:/var/www/mywebsite/
