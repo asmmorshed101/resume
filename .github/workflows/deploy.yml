@@ -16,16 +16,17 @@ jobs:
       # Step 2: Deploy to Web Server
       - name: Deploy to Web Server
         run: |
-          # Variables
           SERVER_USER=ubuntu
-          SERVER_IP=18.143.176.43
-          PRIVATE_KEY=~/.ssh/id_ecdsa  # Option 2: dedicated SSH key for Runner → Web Server
-          ssh -i $PRIVATE_KEY $SERVER_USER@$SERVER_IP "
-            sudo rm -rf /var/www/mywebsite/*
-          "
-          # Copy code to Web Server
+          SERVER_IP=18.143.147.188
+          PRIVATE_KEY=~/.ssh/id_ecdsa
+
+          # Copy website files to Runner home dir
           scp -i $PRIVATE_KEY -o StrictHostKeyChecking=no -r ./* $SERVER_USER@$SERVER_IP:/var/www/mywebsite/
 
           # Fix permissions and restart Nginx
-          ssh -i $PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP \
-            "sudo chown -R www-data:www-data /var/www/mywebsite && sudo find /var/www/mywebsite -type d -exec chmod 755 {} \; && sudo find /var/www/mywebsite -type f -exec chmod 644 {} \; && sudo systemctl restart nginx"
+          ssh -i $PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+            sudo chown -R www-data:www-data /var/www/mywebsite &&
+            sudo find /var/www/mywebsite -type d -exec chmod 755 {} \; &&
+            sudo find /var/www/mywebsite -type f -exec chmod 644 {} \; &&
+            sudo systemctl restart nginx
+          "
