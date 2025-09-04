@@ -7,18 +7,23 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Deploy to Web Server
       - name: Deploy to Web Server
         run: |
-          # Web Server এর IP address
+          # Variables
           SERVER_USER=ubuntu
           SERVER_IP=18.143.176.43
+          PRIVATE_KEY=~/.ssh/runner_web_key  # Option 2: dedicated SSH key for Runner → Web Server
 
-          # কোড কপি করো Web Server এ
-          scp -o StrictHostKeyChecking=no -r ./* $ubuntu@$18.143.176.43:/var/www/mywebsite/
+          # Copy code to Web Server
+          scp -i $PRIVATE_KEY -o StrictHostKeyChecking=no -r ./* $SERVER_USER@$SERVER_IP:/var/www/mywebsite/
 
-          # Nginx restart
-          ssh -o StrictHostKeyChecking=no $ubuntu@$18.143.176.43 "sudo systemctl restart nginx"
+          # Fix permissions and restart Nginx
+          ssh -i $PRIVATE_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP \
+            "sudo chown -R www-data:www-data /var/www/mywebsite && sudo find /var/www/mywebsite -type d -exec chmod 755 {} \; && sudo find /var/www/mywebsite -type f -exec chmod 644 {} \; && sudo systemctl restart nginx"
